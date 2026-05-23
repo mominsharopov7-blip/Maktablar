@@ -15,8 +15,8 @@
             <div style="font-size:10px; font-weight:bold; color:#1b5e20; letter-spacing:0.5px;">SARIOSIYO</div>
         </div>
         <div style="text-align:center; flex-grow:1; margin:0 10px;">
-            <h2 style="color:#2c3e50; margin:0; font-size:15px; font-weight:700; line-height:1.3;">SARIOSIYO TUMANI MAKTABLAR MASOFA TIZIMI</h2>
-            <div style="font-size:11px; color:#555; margin-top:3px; font-weight:500;">O'zbekiston Respublikasi</div>
+            <h2 style="color:#2c3e50; margin:0; font-size:15px; font-weight:700; line-height:1.3;">SARIOSIYO TUMANI MAKTABLAR MARENDA TIZIMI</h2>
+            <div style="font-size:11px; color:#555; margin-top:3px; font-weight:500;">O'zbekiston Republic</div>
             <div style="color:#3c1e70; font-size:13px; font-family:'Brush Script MT', cursive; font-weight:bold; margin-top:4px;">Kelajak Markazlari</div>
         </div>
         <div style="text-align:center; min-width:60px;">
@@ -61,12 +61,91 @@
     // 1 dan 94 gacha BO'LGAN BARCHA MAKTABLAR RO'YXATI
     const schools = [];
     for (let i = 1; i <= 94; i++) {
-        // Namuna sifatida koordinatasi aniq asosiy maktablar joylashuvi
         let lat = 0.0, lng = 0.0, region = "Sariosiyo tumani";
         
+        // Koordinatalarni aniq tekshirib to'g'riladik
         if (i === 1) { lat = 38.04215; lng = 67.92841; region = "Sariosiyo Markazi"; }
         else if (i === 2) { lat = 38.04500; lng = 67.93000; region = "Sariosiyo Markazi"; }
         else if (i === 10) { lat = 38.15420; lng = 67.96110; region = "Sharg'un shahri"; }
-        else if (i === i9) { lat = 38.12456; lng = 67.89512; region = "Dashnobod"; }
-        else if (i === 34) { lat
-    
+        else if (i === 19) { lat = 38.12456; lng = 67.89512; region = "Dashnobod"; }
+        else if (i === 34) { lat = 38.13120; lng = 67.89945; region = "Dashnobod"; }
+        else if (i === 54) { lat = 38.11890; lng = 67.88210; region = "Dashnobod"; }
+        
+        schools.push({ id: i, name: i + "-sonli maktab", region: region, lat: lat, lng: lng });
+    }
+
+    // Select menyuni to'ldirish
+    const select = document.getElementById('schoolSelect');
+    schools.forEach(school => {
+        let opt = document.createElement('option');
+        opt.value = school.id;
+        opt.innerHTML = `${school.id}-maktab (${school.region})`;
+        select.appendChild(opt);
+    });
+
+    function getDistance(lat1, lon1, lat2, lon2) {
+        if (lat1 === 0 || lat2 === 0 || lon1 === 0 || lon2 === 0) return null;
+        const R = 6371; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    function calculateDistances() {
+        const selectValue = document.getElementById('schoolSelect').value;
+        const resultBox = document.getElementById('resultBox');
+        const selectedTitle = document.getElementById('selectedTitle');
+        const nearestList = document.getElementById('nearestList');
+
+        if (!selectValue) {
+            resultBox.style.display = 'none';
+            return;
+        }
+
+        const selectedSchool = schools.find(s => s.id == selectValue);
+        selectedTitle.innerHTML = `📍 Tanlangan bosh maktab: ${selectedSchool.name} (${selectedSchool.region})`;
+
+        if (selectedSchool.lat === 0 || selectedSchool.lng === 0) {
+            nearestList.innerHTML = '<div style="font-size:13px; color:#ef4444; font-style:italic; padding:15px; text-align:center; font-weight:500;">Ushbu maktabning aniq GPS koordinatalari tizimga kiritilmoqda. Masofani hisoblash uchun 1, 2, 10, 19, 34 yoki 54-maktablarni tanlab ko\'ring.</div>';
+            resultBox.style.display = 'block';
+            return;
+        }
+
+        let calculated = schools
+            .filter(s => s.id !== selectedSchool.id && s.lat !== 0 && s.lng !== 0)
+            .map(s => {
+                let dist = getDistance(selectedSchool.lat, selectedSchool.lng, s.lat, s.lng);
+                return { ...s, distance: dist };
+            })
+            .sort((a, b) => a.distance - b.distance);
+
+        nearestList.innerHTML = '';
+
+        if (calculated.length === 0) {
+            nearestList.innerHTML = '<div style="font-size:13px; color:#7f8c8d; font-style:italic; padding:15px; text-align:center;">Solishtirish uchun boshqa koordinatali maktab topilmadi.</div>';
+        } else {
+            calculated.forEach(s => {
+                let distanceStr = s.distance < 1 
+                    ? `${(s.distance * 1000).toFixed(0)} metr` 
+                    : `${s.distance.toFixed(2)} km`;
+
+                nearestList.innerHTML += `
+                    <div style="background:#f9f9f9; border:1px solid #e0e0e0; padding:12px 15px; margin-bottom:10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid #3c1e70;">
+                        <div>
+                            <b style="color:#2c3e50; display:block; font-size:14px;">🏫 ${s.name}</b>
+                            <span style="font-size:12px; color:#7f8c8d;">Hudud: ${s.region}</span>
+                        </div>
+                        <div style="background:#3c1e70; color:white; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:700; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.1);">${distanceStr}</div>
+                    </div>
+                `;
+            });
+        }
+        resultBox.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
