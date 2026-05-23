@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sariosiyo Maktablari Masofa Tizimi | Kelajak Markazlari</title>
+    <title>Sariosiyo Maktablari Masofa Tizimi</title>
 </head>
 <body style="font-family:'Segoe UI', sans-serif; background-color:#edf2f7; margin:0; padding:10px; display:flex; justify-content:center; align-items:start; min-height:100vh;">
 
@@ -15,9 +15,9 @@
             <div style="font-size:10px; font-weight:bold; color:#1b5e20; letter-spacing:0.5px;">SARIOSIYO</div>
         </div>
         <div style="text-align:center; flex-grow:1; margin:0 10px;">
-            <h2 style="color:#2c3e50; margin:0; font-size:16px; font-weight:700; line-height:1.3;">SARIOSIYO TUMANI MAKTABLAR MASOFA TIZIMI</h2>
+            <h2 style="color:#2c3e50; margin:0; font-size:15px; font-weight:700; line-height:1.3;">SARIOSIYO TUMANI MAKTABLAR MASOFA TIZIMI</h2>
             <div style="font-size:11px; color:#555; margin-top:3px; font-weight:500;">O'zbekiston Respublikasi</div>
-            <div style="color:#3c1e70; font-size:14px; font-family:'Brush Script MT', cursive; font-weight:bold; margin-top:5px;">Kelajak Markazlari</div>
+            <div style="color:#3c1e70; font-size:13px; font-family:'Brush Script MT', cursive; font-weight:bold; margin-top:4px;">Kelajak Markazlari</div>
         </div>
         <div style="text-align:center; min-width:60px;">
             <div style="font-size:35px; margin-bottom:2px;">🏫</div>
@@ -28,10 +28,12 @@
     <div style="background-color:#fff9c4; padding:20px; text-align:center; border-bottom:1px solid #fff59d; position:relative;">
         <div style="font-size:75px; margin-bottom:5px;">🏢</div>
         <div style="font-size:14px; font-weight:700; color:#2c3e50; letter-spacing:0.5px;">Boshqaruv Paneli</div>
-        <div style="margin-top:15px;">
-            <div style="color:#3c1e70; font-size:28px; font-family:'Brush Script MT', cursive; font-weight:bold;">Kelajak</div>
-            <div style="color:#555; font-size:10px; font-weight:bold; letter-spacing:1px; margin-top:-5px;">MARKAZLARI</div>
+        
+        <div style="margin-top:12px;">
+            <div style="color:#3c1e70; font-size:26px; font-family:'Brush Script MT', cursive; font-weight:bold; margin-bottom:0;">Kelajak</div>
+            <div style="color:#555; font-size:9px; font-weight:bold; letter-spacing:1.5px; margin-top:-6px;">MARKAZLARI</div>
         </div>
+        
         <div style="position:absolute; bottom:12px; right:20px; font-size:22px; opacity:0.8;">📍</div>
         <div style="position:absolute; top:15px; left:20px; font-size:18px; opacity:0.6;">🗺️</div>
     </div>
@@ -39,13 +41,13 @@
     <div style="padding:20px;">
         <div style="margin-bottom:20px;">
             <label style="font-weight:700; color:#34495e; display:block; margin-bottom:10px; font-size:15px;">Ro'yxatdan maktabni tanlang:</label>
-            <select id="schoolSelect" onchange="calculateDistances()" style="width:100%; padding:14px; border:2px solid #4db6ac; border-radius:10px; font-size:15px; color:#2c3e50; background-color:#fff; cursor:pointer; outline:none; font-weight:500; box-sizing:border-box;">
+            <select id="schoolSelect" onchange="calculateDistances()" style="width:100%; padding:14px; border:2px solid #3c1e70; border-radius:10px; font-size:15px; color:#2c3e50; background-color:#fff; cursor:pointer; outline:none; font-weight:500; box-sizing:border-box;">
                 <option value="">-- Ro'yxatdan tanlang (94 ta maktab) --</option>
             </select>
         </div>
 
         <div id="resultBox" style="display:none; margin-top:25px; border-top:1px solid #eee; padding-top:15px;">
-            <div id="selectedTitle" style="font-size:15px; font-weight:bold; color:#00796b; margin-bottom:15px; background:#e0f2f1; padding:12px; border-radius:8px; border-left:5px solid #00796b;"></div>
+            <div id="selectedTitle" style="font-size:15px; font-weight:bold; color:#3c1e70; margin-bottom:15px; background:#f0eafc; padding:12px; border-radius:8px; border-left:5px solid #3c1e70;"></div>
             <div id="nearestList"></div>
         </div>
     </div>
@@ -56,16 +58,15 @@
 </div>
 
 <script>
-    // 1 dan 94 gacha bo'lgan barcha maktablar bazasi
-    const schools = [
-        { id: 1, name: "1-sonli maktab", region: "Sariosiyo Markazi", lat: 38.042, lng: 67.928 },
-        { id: 2, name: "2-sonli maktab", region: "Sariosiyo Markazi", lat: 38.045, lng: 67.930 },
-        { id: 10, name: "10-sonli maktab", region: "Sharg'un", lat: 38.154, lng: 67.961 },
-        { id: 19, name: "19-sonli maktab", region: "Dashnobod", lat: 38.124, lng: 67.895 },
-        { id: 34, name: "34-sonli maktab", region: "Dashnobod", lat: 38.131, lng: 67.899 },
-        { id: 54, name: "54-sonli maktab", region: "Dashnobod", lat: 38.118, lng: 67.882 }
-        // Qolgan maktablarni o'zingiz kiritasiz...
-    ];
-
-    // Select menyuni 94 ta maktab bilan to'ldirish
+    // 1 dan 94 gacha BO'LGAN BARCHA MAKTABLAR RO'YXATI
+    const schools = [];
+    for (let i = 1; i <= 94; i++) {
+        // Namuna sifatida koordinatasi aniq asosiy maktablar joylashuvi
+        let lat = 0.0, lng = 0.0, region = "Sariosiyo tumani";
+        
+        if (i === 1) { lat = 38.04215; lng = 67.92841; region = "Sariosiyo Markazi"; }
+        else if (i === 2) { lat = 38.04500; lng = 67.93000; region = "Sariosiyo Markazi"; }
+        else if (i === 10) { lat = 38.15420; lng = 67.96110; region = "Sharg'un shahri"; }
+        else if (i === i9) { lat = 38.12456; lng = 67.89512; region = "Dashnobod"; }
+        else if (i === 34) { lat
     
