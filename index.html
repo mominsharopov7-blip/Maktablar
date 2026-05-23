@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sariosiyo Maktablari Masofa Hisoblagichi</title>
+    <title>Sariosiyo Maktablari Masofa Tizimi</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f3f4f6;
             margin: 0;
-            padding: 40px 20px;
+            padding: 20px;
             display: flex;
             justify-content: center;
         }
@@ -18,22 +18,283 @@
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            max-width: 550px;
+            max-width: 600px;
             width: 100%;
         }
         h2 {
             color: #1e293b;
             margin-top: 0;
             text-align: center;
-            font-size: 24px;
+            font-size: 22px;
             border-bottom: 2px solid #e2e8f0;
             padding-bottom: 15px;
+        }
+        .search-box {
+            margin-top: 15px;
         }
         label {
             font-weight: 600;
             color: #475569;
             display: block;
             margin-bottom: 8px;
+        }
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #334155;
+            background-color: #fff;
+            cursor: pointer;
+            outline: none;
+        }
+        select:focus {
+            border-color: #3b82f6;
+        }
+        .result-box {
+            margin-top: 25px;
+        }
+        .selected-school-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 15px;
+            background: #eff6ff;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #2563eb;
+        }
+        .school-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .school-info b {
+            color: #1e293b;
+            display: block;
+        }
+        .school-info span {
+            font-size: 13px;
+            color: #64748b;
+        }
+        .distance-badge {
+            background: #10b981;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .hint {
+            font-size: 12px;
+            color: #ef4444;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Sariosiyo Maktablari Masofa Tizimi (94 ta Maktab)</h2>
+    
+    <div class="search-box">
+        <label for="schoolSelect">Asosiy maktabni tanlang:</label>
+        <select id="schoolSelect" onchange="calculateDistances()">
+            <option value="">-- Ro'yxatdan tanlang --</option>
+            </select>
+    </div>
+
+    <div class="result-box" id="resultBox" style="display: none;">
+        <div class="selected-school-title" id="selectedTitle"></div>
+        <div id="nearestList"></div>
+    </div>
+</div>
+
+<script>
+    // SARIOSIYO TUMANI MAKTABLAR BAZASI
+    // Diqqat: O'zingiz topgan real koordinatalarni (lat va lng) mos maktab qatoriga yozib chiqing!
+    const schools = [
+        { id: 1, name: "1-sonli maktab", region: "Sariosiyo Markazi", lat: 38.04215, lng: 67.92841 },
+        { id: 2, name: "2-sonli maktab", region: "Sariosiyo Markazi", lat: 38.04500, lng: 67.93000 },
+        { id: 3, name: "3-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 4, name: "4-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 5, name: "5-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 6, name: "6-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 7, name: "7-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 8, name: "8-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 9, name: "9-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 10, name: "10-sonli maktab", region: "Sharg'un", lat: 38.15420, lng: 67.96110 },
+        { id: 11, name: "11-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 12, name: "12-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 13, name: "13-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 14, name: "14-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 15, name: "15-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 16, name: "16-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 17, name: "17-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 18, name: "18-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 19, name: "19-sonli maktab", region: "Dashnobod", lat: 38.12456, lng: 67.89512 },
+        { id: 20, name: "20-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 21, name: "21-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 22, name: "22-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 23, name: "23-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 24, name: "24-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 25, name: "25-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 26, name: "26-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 27, name: "27-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 28, name: "28-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 29, name: "29-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 30, name: "30-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 31, name: "31-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 32, name: "32-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 33, name: "33-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 34, name: "34-sonli maktab", region: "Dashnobod", lat: 38.13120, lng: 67.89945 },
+        { id: 35, name: "35-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 36, name: "36-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 37, name: "37-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 38, name: "38-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 39, name: "39-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 40, name: "40-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 41, name: "41-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 42, name: "42-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 43, name: "43-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 44, name: "44-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 45, name: "45-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 46, name: "46-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 47, name: "47-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 48, name: "48-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 49, name: "49-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 50, name: "50-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 51, name: "51-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 52, name: "52-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 53, name: "53-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 54, name: "54-sonli maktab", region: "Dashnobod", lat: 38.11890, lng: 67.88210 },
+        { id: 55, name: "55-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 56, name: "56-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 57, name: "57-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 58, name: "58-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 59, name: "59-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 60, name: "60-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 61, name: "61-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 62, name: "62-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 63, name: "63-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 64, name: "64-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 65, name: "65-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 66, name: "66-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 67, name: "67-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 68, name: "68-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 69, name: "69-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 70, name: "70-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 71, name: "71-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 72, name: "72-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 73, name: "73-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 74, name: "74-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 75, name: "75-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 76, name: "76-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 77, name: "77-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 78, name: "78-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 79, name: "79-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 80, name: "80-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 81, name: "81-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 82, name: "82-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 83, name: "83-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 84, name: "84-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 85, name: "85-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 86, name: "86-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 87, name: "87-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 88, name: "88-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 89, name: "89-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 90, name: "90-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 91, name: "91-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 92, name: "92-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 93, name: "93-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 },
+        { id: 94, name: "94-sonli maktab", region: "Sariosiyo", lat: 0.0, lng: 0.0 }
+    ];
+
+    // Select menyuni maktablar bilan to'ldirish
+    const select = document.getElementById('schoolSelect');
+    schools.forEach(school => {
+        let opt = document.createElement('option');
+        opt.value = school.id;
+        opt.innerHTML = `${school.id}-maktab (${school.region})`;
+        select.appendChild(opt);
+    });
+
+    // Haversine formulasi
+    function getDistance(lat1, lon1, lat2, lon2) {
+        if (lat1 === 0 || lat2 === 0) return null; // Agar koordinata kiritilmagan bo'lsa
+        const R = 6371; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    function calculateDistances() {
+        const selectValue = document.getElementById('schoolSelect').value;
+        const resultBox = document.getElementById('resultBox');
+        const selectedTitle = document.getElementById('selectedTitle');
+        const nearestList = document.getElementById('nearestList');
+
+        if (!selectValue) {
+            resultBox.style.display = 'none';
+            return;
+        }
+
+        const selectedSchool = schools.find(s => s.id == selectValue);
+        selectedTitle.innerHTML = `Tanlangan: ${selectedSchool.name} (${selectedSchool.region})`;
+
+        if(selectedSchool.lat === 0) {
+            nearestList.innerHTML = '<div class="hint">Bu maktabning koordinatalari hali kiritilmagan (0.0 turibdi). Shuning uchun masofani o\'lchab bo\'lmaydi.</div>';
+            resultBox.style.display = 'block';
+            return;
+        }
+
+        let calculated = schools
+            .filter(s => s.id !== selectedSchool.id && s.lat !== 0) // Koordinatasi borlarini hisoblash
+            .map(s => {
+                let dist = getDistance(selectedSchool.lat, selectedSchool.lng, s.lat, s.lng);
+                return { ...s, distance: dist };
+            })
+            .sort((a, b) => a.distance - b.distance);
+
+        nearestList.innerHTML = '';
+        
+        if(calculated.length === 0) {
+            nearestList.innerHTML = '<div class="hint">Tizimda solishtirish uchun boshqa koordinatali maktab topilmadi.</div>';
+        } else {
+            calculated.forEach(s => {
+                let distanceStr = s.distance < 1 
+                    ? `${(s.distance * 1000).toFixed(0)} metr` 
+                    : `${s.distance.toFixed(2)} km`;
+
+                nearestList.innerHTML += `
+                    <div class="school-card">
+                        <div class="school-info">
+                            <b>${s.name}</b>
+                            <span>Hudud: ${s.region}</span>
+                        </div>
+                        <div class="distance-badge">${distanceStr}</div>
+                    </div>
+                `;
+            });
+        }
+
+        resultBox.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
             margin-top: 20px;
         }
         select {
