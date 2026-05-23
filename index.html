@@ -15,8 +15,8 @@
             <div style="font-size:10px; font-weight:bold; color:#1b5e20; letter-spacing:0.5px;">SARIOSIYO</div>
         </div>
         <div style="text-align:center; flex-grow:1; margin:0 10px;">
-            <h2 style="color:#2c3e50; margin:0; font-size:15px; font-weight:700; line-height:1.3;">SARIOSIYO TUMANI MAKTABLAR MARENDA TIZIMI</h2>
-            <div style="font-size:11px; color:#555; margin-top:3px; font-weight:500;">O'zbekiston Republic</div>
+            <h2 style="color:#2c3e50; margin:0; font-size:15px; font-weight:700; line-height:1.3;">SARIOSIYO TUMANI MAKTABLAR MASOFA TIZIMI</h2>
+            <div style="font-size:11px; color:#555; margin-top:3px; font-weight:500;">O'zbekiston Respublikasi</div>
             <div style="color:#3c1e70; font-size:13px; font-family:'Brush Script MT', cursive; font-weight:bold; margin-top:4px;">Kelajak Markazlari</div>
         </div>
         <div style="text-align:center; min-width:60px;">
@@ -28,12 +28,10 @@
     <div style="background-color:#fff9c4; padding:20px; text-align:center; border-bottom:1px solid #fff59d; position:relative;">
         <div style="font-size:75px; margin-bottom:5px;">🏢</div>
         <div style="font-size:14px; font-weight:700; color:#2c3e50; letter-spacing:0.5px;">Boshqaruv Paneli</div>
-        
         <div style="margin-top:12px;">
             <div style="color:#3c1e70; font-size:26px; font-family:'Brush Script MT', cursive; font-weight:bold; margin-bottom:0;">Kelajak</div>
             <div style="color:#555; font-size:9px; font-weight:bold; letter-spacing:1.5px; margin-top:-6px;">MARKAZLARI</div>
         </div>
-        
         <div style="position:absolute; bottom:12px; right:20px; font-size:22px; opacity:0.8;">📍</div>
         <div style="position:absolute; top:15px; left:20px; font-size:18px; opacity:0.6;">🗺️</div>
     </div>
@@ -52,21 +50,21 @@
         </div>
     </div>
 
-    <div style="background:#eceff1; padding:12px; text-align:center; font-size:11px; color:#666; border-top:1px solid #cfd8dc; font-weight:500;">
-        © Sariosiyo Tumani Xalq Ta'limi Bo'limi | Hamkorlikda: Kelajak Markazlari
+    <div style="background:#eceff1; padding:15px; text-align:center; font-size:11px; color:#444; border-top:1px solid #cfd8dc; font-weight:500; line-height:1.6;">
+        <div>© Sariosiyo Tumani Xalq Ta'limi Bo'limi | Hamkorlikda: Kelajak Markazlari</div>
+        <div style="margin-top: 5px; color: #3c1e70; font-size: 12px; font-weight: 700;">
+            Tizim yaratuvchisi: <span style="border-bottom: 2px solid #3c1e70; padding-bottom: 1px;">Moʻmin Sharopov</span>
+        </div>
     </div>
 </div>
 
 <script>
-    // 1 dan 94 gacha BO'LGAN BARCHA MAKTABLAR RO'YXATI
     const schools = [];
     for (let i = 1; i <= 94; i++) {
         let lat = 0.0, lng = 0.0, region = "Sariosiyo tumani";
         
-        // Koordinatalarni aniq tekshirib to'g'riladik
-        if (i === 1) { lat = 38.4179709; lng = 6
-            67.9608830; region = "Sariosiyo Markazi"; }
-        else if (i === 2) { lat = 38.4077351; lng = 67.9527384; region = "Sariosiyo Markazi"; }
+        if (i === 1) { lat = 38.04215; lng = 67.92841; region = "Sariosiyo Markazi"; }
+        else if (i === 2) { lat = 38.04500; lng = 67.93000; region = "Sariosiyo Markazi"; }
         else if (i === 10) { lat = 38.15420; lng = 67.96110; region = "Sharg'un shahri"; }
         else if (i === 19) { lat = 38.12456; lng = 67.89512; region = "Dashnobod"; }
         else if (i === 34) { lat = 38.13120; lng = 67.89945; region = "Dashnobod"; }
@@ -75,7 +73,6 @@
         schools.push({ id: i, name: i + "-sonli maktab", region: region, lat: lat, lng: lng });
     }
 
-    // Select menyuni to'ldirish
     const select = document.getElementById('schoolSelect');
     schools.forEach(school => {
         let opt = document.createElement('option');
@@ -110,7 +107,7 @@
         selectedTitle.innerHTML = `📍 Tanlangan bosh maktab: ${selectedSchool.name} (${selectedSchool.region})`;
 
         if (selectedSchool.lat === 0 || selectedSchool.lng === 0) {
-            nearestList.innerHTML = '<div style="font-size:13px; color:#ef4444; font-style:italic; padding:15px; text-align:center; font-weight:500;">Ushbu maktabning aniq GPS koordinatalari tizimga kiritilmoqda. Masofani hisoblash uchun 1, 2, 10, 19, 34 yoki 54-maktablarni tanlab ko\'ring.</div>';
+            nearestList.innerHTML = '<div style="font-size:13px; color:#ef4444; font-style:italic; padding:15px; text-align:center; font-weight:500;">Ushbu maktabning aniq GPS koordinatalari tizimga kiritilmoqda. Masofani tekshirish uchun 1, 2, 10, 19, 34 yoki 54-maktablarni tanlang.</div>';
             resultBox.style.display = 'block';
             return;
         }
